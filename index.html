@@ -1,0 +1,72 @@
+<div id="app">
+  <h2>Todo App</h2>
+  <input id="newNotes" />
+  <button @click="addNewNotes()">Add Notes</button>
+  <p v-for="note in notes">
+    <b>*{{ note.description }}</b>
+    <button @click="deleteNotes(note.id)">Delete Notes</button>
+  </p>
+</div>
+
+<script
+  src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.7.0/axios.min.js"
+  integrity="sha512-GHXnNiWBo4rluQ82VYvC5Wx/UnQbfbuzDH0y3jTwXat2rJDpLf1CCclWbINCfbzLFheboOz8NSlrqTKtdyL7hA=="
+  crossorigin="anonymous"
+  referrerpolicy="no-referrer"
+></script>
+
+<script type="module">
+  import {
+    createApp,
+    ref,
+  } from "https://unpkg.com/vue@3/dist/vue.esm-browser.js";
+
+  const API_URL = "https://localhost:7065/";
+  createApp({
+    data() {
+      return {
+        notes: [],
+      };
+    },
+    methods: {
+      async refreshData() {
+        try {
+          const response = await axios.get(API_URL + "api/TodoApp/GetNotes");
+          this.notes = response.data;
+        } catch (error) {
+          console.error(error);
+        }
+      },
+      async addNewNotes() {
+        const newNotes = document.getElementById("newNotes").value;
+        const formData = new FormData();
+        formData.append("newNotes", newNotes);
+        try {
+          const response = await axios.post(
+            API_URL + "api/TodoApp/AddNotes",
+            formData
+          );
+          this.refreshData();
+          alert(response.data);
+        } catch (error) {
+          console.error(error);
+        }
+      },
+      async deleteNotes(id) {
+        try {
+          const response = await axios.post(
+            API_URL + "api/TodoApp/DeleteNotes",
+            { id: id }
+          );
+          this.refreshData();
+          alert(response.data);
+        } catch (error) {
+          console.error(error);
+        }
+      },
+    },
+    mounted() {
+      this.refreshData();
+    },
+  }).mount("#app");
+</script>

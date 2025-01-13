@@ -1,0 +1,3 @@
+﻿<Project>
+  <Import Project="..\build\ToDoApp_Vuejs_c#.props" />
+</Project>
